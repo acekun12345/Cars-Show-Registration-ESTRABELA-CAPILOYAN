@@ -1,14 +1,31 @@
 import PaymentBadge from './components/PaymentBadge.jsx'
+import KpiCards from './components/KpiCards.jsx'
 import StatusBadge from './components/StatusBadge.jsx'
 import { formatCurrency, formatDateTime } from './utils/format.js'
+
+const sampleSummary = {
+  totalRegistrations: 30,
+  confirmed: 11,
+  checkedIn: 7,
+  pending: 7,
+  cancelled: 5,
+  totalFees: 162500,
+  totalPayments: 106500,
+  uncollectedPayments: 56000,
+}
 
 function App() {
   return (
     <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="mx-auto max-w-3xl space-y-8">
+      <div className="mx-auto max-w-6xl space-y-8">
         <h1 className="text-3xl font-bold">
           Car Show Registration Dashboard
         </h1>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Registration overview</h2>
+          <KpiCards summary={sampleSummary} />
+        </section>
 
         <section className="space-y-4 rounded-lg bg-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold">Helper preview</h2>
