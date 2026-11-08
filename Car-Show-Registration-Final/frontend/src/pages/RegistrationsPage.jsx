@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getRegistrations, getSummary } from '../api/sample-data.js'
 import KpiCards from '../components/KpiCards.jsx'
+import RegistrationFilters from '../components/RegistrationFilters.jsx'
 import RegistrationTable from '../components/RegistrationTable.jsx'
+import useDebounce from '../hooks/useDebounce.js'
 
 function RegistrationsPage() {
   const [items, setItems] = useState([])
@@ -10,12 +12,13 @@ function RegistrationsPage() {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [filters] = useState({
+  const [filters, setFilters] = useState({
     participantName: '',
     type: '',
     status: '',
   })
-  const [page] = useState(1)
+  const debouncedParticipantName = useDebounce(filters.participantName, 400)
+  const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
 
   useEffect(() => {
@@ -27,7 +30,13 @@ function RegistrationsPage() {
 
       try {
         const [registrationData, summaryData] = await Promise.all([
-          getRegistrations({ ...filters, page, pageSize }),
+          getRegistrations({
+            participantName: debouncedParticipantName,
+            type: filters.type,
+            status: filters.status,
+            page,
+            pageSize,
+          }),
           getSummary(),
         ])
 
@@ -55,7 +64,20 @@ function RegistrationsPage() {
     return () => {
       isCurrentRequest = false
     }
-  }, [filters, page, pageSize])
+  }, [debouncedParticipantName, filters.type, filters.status, page, pageSize])
+
+  function handleFilterChange(name, value) {
+    setFilters((currentFilters) => ({
+      ...currentFilters,
+      [name]: value,
+    }))
+    setPage(1)
+  }
+
+  function handleClearFilters() {
+    setFilters({ participantName: '', type: '', status: '' })
+    setPage(1)
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
@@ -67,6 +89,12 @@ function RegistrationsPage() {
         {summary && <KpiCards summary={summary} />}
 
         <section aria-labelledby="registrations-heading" className="space-y-4">
+          <RegistrationFilters
+            filters={filters}
+            onClear={handleClearFilters}
+            onFilterChange={handleFilterChange}
+          />
+
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2
               className="text-xl font-semibold"
