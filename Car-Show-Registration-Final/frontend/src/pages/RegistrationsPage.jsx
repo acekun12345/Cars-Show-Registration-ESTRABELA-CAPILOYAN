@@ -21,6 +21,11 @@ function RegistrationsPage() {
   const debouncedParticipantName = useDebounce(filters.participantName, 400)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [retryCount, setRetryCount] = useState(0)
+  const forceFailure =
+    import.meta.env.DEV &&
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('forceError') === '1'
 
   useEffect(() => {
     let isCurrentRequest = true
@@ -30,6 +35,10 @@ function RegistrationsPage() {
       setError('')
 
       try {
+        if (forceFailure) {
+          throw new Error('Temporary error-state test is enabled.')
+        }
+
         const [registrationData, summaryData] = await Promise.all([
           getRegistrations({
             participantName: debouncedParticipantName,
@@ -51,7 +60,7 @@ function RegistrationsPage() {
         setSummary(summaryData)
       } catch {
         if (isCurrentRequest) {
-          setError('Unable to load registrations. Please try again later.')
+          setError('Cannot reach the API. Please check your connection and try again.')
         }
       } finally {
         if (isCurrentRequest) {
@@ -65,7 +74,15 @@ function RegistrationsPage() {
     return () => {
       isCurrentRequest = false
     }
-  }, [debouncedParticipantName, filters.type, filters.status, page, pageSize])
+  }, [
+    debouncedParticipantName,
+    filters.type,
+    filters.status,
+    forceFailure,
+    page,
+    pageSize,
+    retryCount,
+  ])
 
   function handleFilterChange(name, value) {
     setFilters((currentFilters) => ({
@@ -103,51 +120,77 @@ function RegistrationsPage() {
             >
               Registrations
             </h2>
-            {!loading && (
+            {!loading && !error && (
               <p className="text-sm text-slate-600">
                 {totalCount} registrations
               </p>
             )}
           </div>
 
-          {loading && (
-            <p aria-live="polite" className="text-sm text-slate-600">
-              Loading registrations...
-            </p>
-          )}
-
-          {error && (
+          {loading ? (
             <p
+              aria-live="polite"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-4 text-slate-700"
+              role="status"
+            >
+              <span
+                aria-hidden="true"
+                className="size-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"
+              />
+              Loading registrations…
+            </p>
+          ) : error ? (
+            <div
               aria-live="assertive"
               className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-900"
               role="alert"
             >
-              {error}
-            </p>
+              <span className="block font-medium">{error}</span>
+              {forceFailure && (
+                <span className="mt-1 block text-sm">
+                  TEMPORARY ERROR-STATE TEST is enabled with ?forceError=1.
+                </span>
+              )}
+              <button
+                className="mt-3 rounded-md bg-red-800 px-3 py-2 text-sm font-medium text-white hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-800/40 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={loading}
+                onClick={() => setRetryCount((count) => count + 1)}
+                type="button"
+              >
+                Try again
+              </button>
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-lg border border-slate-200 bg-white p-6">
+              <p className="text-slate-700">
+                No registrations match your filters.
+              </p>
+              <button
+                className="mt-4 rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700/40"
+                onClick={handleClearFilters}
+                type="button"
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <>
+              <RegistrationTable items={items} />
+              <Pagination
+                loading={loading}
+                onPageChange={setPage}
+                onPageSizeChange={(nextPageSize) => {
+                  setPageSize(nextPageSize)
+                  setPage(1)
+                }}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+              />
+            </>
           )}
 
-          {!loading && !error && items.length === 0 && (
-            <p className="rounded-lg border border-slate-200 bg-white p-6 text-slate-600">
-              No registrations found.
-            </p>
-          )}
-
-          {!error && <RegistrationTable items={items} />}
-
-          {totalPages > 0 && (
-            <Pagination
-              loading={loading}
-              onPageChange={setPage}
-              onPageSizeChange={(nextPageSize) => {
-                setPageSize(nextPageSize)
-                setPage(1)
-              }}
-              page={page}
-              pageSize={pageSize}
-              totalCount={totalCount}
-              totalPages={totalPages}
-            />
-          )}
         </section>
       </div>
     </main>
