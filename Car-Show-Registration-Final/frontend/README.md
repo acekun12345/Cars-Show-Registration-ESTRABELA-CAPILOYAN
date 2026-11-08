@@ -1,16 +1,43 @@
-# React + Vite
+# Car Show Registration Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Run the frontend
 
-Currently, two official plugins are available:
+1. Make sure the C# API is available at `http://localhost:5205`.
+2. From the repository root, install frontend dependencies:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+   ```sh
+   npm install --prefix frontend
+   ```
 
-## React Compiler
+3. Start the Vite development server:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+   ```sh
+   npm run dev --prefix frontend
+   ```
 
-## Expanding the Oxlint configuration
+4. Open the local URL printed by Vite.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+The development API URL is configured in `.env.development` as
+`VITE_API_BASE_URL=http://localhost:5205`. Restart Vite after changing an
+environment file. The API must allow requests from the frontend's local origin
+through its CORS configuration.
+
+## Switch between sample data and the real API
+
+The data source is selected by one import in
+`src/pages/RegistrationsPage.jsx`:
+
+```js
+import { getRegistrations, getSummary } from '../api/registrationsApi.js'
+```
+
+Use `../api/sample-data.js` in that import to switch to local sample data. Switch
+back to `../api/registrationsApi.js` to use the C# API. Both modules export
+`getRegistrations(filters)` and `getSummary()` with the same return shapes.
+
+## Check the frontend
+
+```sh
+npm run build --prefix frontend
+npm run lint --prefix frontend
+```
