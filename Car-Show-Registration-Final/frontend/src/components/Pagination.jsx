@@ -57,7 +57,7 @@ function Pagination({
           Rows per page
         </label>
         <select
-          className="rounded-md border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-900 focus-visible:border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={loading}
           id="page-size"
           onChange={(event) => onPageSizeChange(Number(event.target.value))}
@@ -71,7 +71,7 @@ function Pagination({
         <nav aria-label="Registration pages" className="flex items-center gap-1">
           <button
             aria-label="Previous page"
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
             disabled={loading || page <= 1}
             onClick={() => onPageChange(page - 1)}
             type="button"
@@ -84,7 +84,7 @@ function Pagination({
               <button
                 aria-current={item === page ? 'page' : undefined}
                 aria-label={`Page ${item}`}
-                className={`min-w-9 rounded-md border px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-50 ${
+                className={`min-w-9 rounded-md border px-3 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-50 ${
                   item === page
                     ? 'border-blue-700 bg-blue-700 text-white'
                     : 'border-slate-300 text-slate-700 hover:bg-slate-50'
@@ -109,7 +109,7 @@ function Pagination({
 
           <button
             aria-label="Next page"
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+            className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
             disabled={loading || page >= totalPages}
             onClick={() => onPageChange(page + 1)}
             type="button"

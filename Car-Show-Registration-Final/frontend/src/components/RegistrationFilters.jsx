@@ -14,7 +14,7 @@ function RegistrationFilters({ filters, onFilterChange, onClear }) {
           </label>
           <input
             autoComplete="off"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus-visible:border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/20"
             id="participant-name"
             onChange={(event) =>
               onFilterChange('participantName', event.target.value)
@@ -33,7 +33,7 @@ function RegistrationFilters({ filters, onFilterChange, onClear }) {
             Registration type
           </label>
           <select
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/20"
             id="registration-type"
             onChange={(event) => onFilterChange('type', event.target.value)}
             value={filters.type}
@@ -53,7 +53,7 @@ function RegistrationFilters({ filters, onFilterChange, onClear }) {
             Status
           </label>
           <select
-            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+            className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus-visible:border-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/20"
             id="registration-status"
             onChange={(event) => onFilterChange('status', event.target.value)}
             value={filters.status}
@@ -67,7 +67,7 @@ function RegistrationFilters({ filters, onFilterChange, onClear }) {
         </div>
 
         <button
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600/30 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={onClear}
           type="button"
         >

@@ -98,9 +98,9 @@ function RegistrationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-8 text-slate-900">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <h1 className="text-3xl font-bold">
+    <main className="min-h-screen bg-slate-50 p-4 text-slate-900 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
+        <h1 className="text-2xl leading-tight font-bold sm:text-3xl">
           Car Show Registration Dashboard
         </h1>
 
@@ -135,7 +135,7 @@ function RegistrationsPage() {
             >
               <span
                 aria-hidden="true"
-                className="size-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700"
+                className="size-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-700 motion-reduce:animate-none"
               />
               Loading registrations…
             </p>
@@ -152,7 +152,7 @@ function RegistrationsPage() {
                 </span>
               )}
               <button
-                className="mt-3 rounded-md bg-red-800 px-3 py-2 text-sm font-medium text-white hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-800/40 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-3 rounded-md bg-red-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800/40 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={loading}
                 onClick={() => setRetryCount((count) => count + 1)}
                 type="button"
@@ -166,7 +166,7 @@ function RegistrationsPage() {
                 No registrations match your filters.
               </p>
               <button
-                className="mt-4 rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700/40"
+                className="mt-4 rounded-md bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700/40"
                 onClick={handleClearFilters}
                 type="button"
               >
