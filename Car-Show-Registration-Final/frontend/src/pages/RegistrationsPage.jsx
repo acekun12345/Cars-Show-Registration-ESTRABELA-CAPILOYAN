@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getRegistrations, getSummary } from '../api/registrationsApi.js'
 import KpiCards from '../components/KpiCards.jsx'
+import NewRegistrationForm from '../components/NewRegistrationForm.jsx'
 import Pagination from '../components/Pagination.jsx'
 import RegistrationFilters from '../components/RegistrationFilters.jsx'
 import RegistrationTable from '../components/RegistrationTable.jsx'
@@ -22,6 +23,9 @@ function RegistrationsPage() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [retryCount, setRetryCount] = useState(0)
+  const [showNewRegistration, setShowNewRegistration] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
+
   useEffect(() => {
     let isCurrentRequest = true
 
@@ -101,6 +105,46 @@ function RegistrationsPage() {
         {summary && <KpiCards summary={summary} />}
 
         <section aria-labelledby="registrations-heading" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2
+              className="text-xl font-semibold"
+              id="registrations-heading"
+            >
+              Registrations
+            </h2>
+            <button
+              className="rounded-md bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700/40"
+              onClick={() => {
+                setSuccessMessage('')
+                setShowNewRegistration((show) => !show)
+              }}
+              type="button"
+            >
+              {showNewRegistration ? 'Close form' : 'New registration'}
+            </button>
+          </div>
+
+          {successMessage && (
+            <p
+              className="rounded-lg border border-green-200 bg-green-50 p-4 text-green-900"
+              role="status"
+            >
+              {successMessage}
+            </p>
+          )}
+
+          {showNewRegistration && (
+            <NewRegistrationForm
+              onCancel={() => setShowNewRegistration(false)}
+              onCreated={() => {
+                setShowNewRegistration(false)
+                setSuccessMessage('Registration created successfully.')
+                setPage(1)
+                setRetryCount((count) => count + 1)
+              }}
+            />
+          )}
+
           <RegistrationFilters
             filters={filters}
             onClear={handleClearFilters}
@@ -108,12 +152,6 @@ function RegistrationsPage() {
           />
 
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h2
-              className="text-xl font-semibold"
-              id="registrations-heading"
-            >
-              Registrations
-            </h2>
             {!loading && !error && (
               <p className="text-sm text-slate-600">
                 {totalCount} registrations

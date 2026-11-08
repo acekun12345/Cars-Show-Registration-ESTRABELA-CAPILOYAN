@@ -35,12 +35,40 @@ function getProblemMessage(problem, status) {
   return `The API request failed with status ${status}.`
 }
 
-async function requestJson(url) {
+function getFieldErrors(problem) {
+  if (!problem?.errors || typeof problem.errors !== 'object') {
+    return {}
+  }
+
+  return Object.fromEntries(
+    Object.entries(problem.errors).map(([field, messages]) => [
+      field,
+      (Array.isArray(messages) ? messages : [messages]).filter(
+        (message) => typeof message === 'string' && message.trim(),
+      ),
+    ]),
+  )
+}
+
+export class ApiError extends Error {
+  constructor(message, { status, fieldErrors = {} }) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+    this.fieldErrors = fieldErrors
+  }
+}
+
+async function requestJson(url, options = {}) {
   let response
 
   try {
     response = await fetch(url, {
-      headers: { Accept: 'application/json' },
+      ...options,
+      headers: {
+        Accept: 'application/json',
+        ...options.headers,
+      },
     })
   } catch (error) {
     throw new Error(
@@ -49,17 +77,35 @@ async function requestJson(url) {
     )
   }
 
-  let result
-  try {
-    result = await response.json()
-  } catch {
-    if (response.ok) {
-      throw new Error('The API returned an invalid JSON response.')
+  const responseText = await response.text()
+  let result = null
+
+  if (responseText) {
+    try {
+      result = JSON.parse(responseText)
+    } catch {
+      if (response.ok) {
+        throw new Error('The API returned an invalid JSON response.')
+      }
     }
   }
 
   if (!response.ok) {
-    throw new Error(getProblemMessage(result, response.status))
+    let fieldErrors = getFieldErrors(result)
+    let message = getProblemMessage(result, response.status)
+
+    if (response.status === 409) {
+      const plateNumberError = Object.entries(fieldErrors).find(
+        ([field]) => field.toLowerCase() === 'platenumber',
+      )?.[1]?.[0]
+      message =
+        (typeof result?.detail === 'string' && result.detail.trim()) ||
+        plateNumberError ||
+        'This plate number is already registered.'
+      fieldErrors = { ...fieldErrors, PlateNumber: [message] }
+    }
+
+    throw new ApiError(message, { status: response.status, fieldErrors })
   }
 
   return result
@@ -91,4 +137,12 @@ export async function getRegistrations({
 
 export async function getSummary() {
   return requestJson(`${getApiBaseUrl()}/api/registrations/summary`)
+}
+
+export async function createRegistration(registration) {
+  return requestJson(`${getApiBaseUrl()}/api/registrations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(registration),
+  })
 }
