@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getRegistrations, getSummary } from '../api/sample-data.js'
 import KpiCards from '../components/KpiCards.jsx'
+import Pagination from '../components/Pagination.jsx'
 import RegistrationFilters from '../components/RegistrationFilters.jsx'
 import RegistrationTable from '../components/RegistrationTable.jsx'
 import useDebounce from '../hooks/useDebounce.js'
@@ -19,7 +20,7 @@ function RegistrationsPage() {
   })
   const debouncedParticipantName = useDebounce(filters.participantName, 400)
   const [page, setPage] = useState(1)
-  const [pageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
     let isCurrentRequest = true
@@ -133,10 +134,19 @@ function RegistrationsPage() {
 
           {!error && <RegistrationTable items={items} />}
 
-          {!loading && totalPages > 0 && (
-            <p className="text-sm text-slate-500">
-              Page {page} of {totalPages} ({pageSize} per page)
-            </p>
+          {totalPages > 0 && (
+            <Pagination
+              loading={loading}
+              onPageChange={setPage}
+              onPageSizeChange={(nextPageSize) => {
+                setPageSize(nextPageSize)
+                setPage(1)
+              }}
+              page={page}
+              pageSize={pageSize}
+              totalCount={totalCount}
+              totalPages={totalPages}
+            />
           )}
         </section>
       </div>
