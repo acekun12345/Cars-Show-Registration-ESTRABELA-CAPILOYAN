@@ -49,29 +49,34 @@ Keep your own Firebase values private to your project configuration. The origina
 - A normalized student ID can have only one active ticket across departments. Existing legacy duplicates are shown for staff resolution.
 - Call next checks the expected current/next tickets again inside the transaction. A second operator using stale queue state cannot accidentally advance the queue a second time.
 - Complete & call next closes existing serving tickets and starts the next one atomically. Done completes the last ticket even when the queue is empty. Skip marks a no-show. Recall sends a fresh student alert without changing queue position.
+- Students can join again after their serving ticket is completed; their new, higher ticket number keeps them at the end of that department's line, independent of device clock differences.
+- Students can enable voice from the turn alert; it plays a test chime and announces their ticket when called.
 - People ahead is based on actual waiting tickets plus active service, not arithmetic subtraction of ticket numbers.
-- One pending mutation at a time, disabled unavailable actions, visible read/write errors, reconnect status and listener cleanup.
+- One pending mutation at a time, disabled unavailable actions, visible read/write errors, reconnect status, recovery from listener errors, and listener cleanup.
 - Student cancellation is limited to their waiting ticket. Serving tickets must be handled by staff.
 - Requests persist, have unique IDs and real timestamps. Staff can advance Pending → Processing → Ready → Released.
 - Native accessible dialogs provide Escape-to-close and focus management. Light/dark themes, mobile layouts and reduced-motion support share one stylesheet.
 - Hardcoded example balances were removed. The account balance screen states that a verified billing source is not connected.
 
-## Optional Firebase prototype connection
+## Firebase connection across devices
 
-1. Use a **separate test Firebase project/database**, or back up your existing database before testing migration.
-2. Copy `.env.example` to `.env.local`.
-3. Fill every Firebase configuration field and set `VITE_QUEUE_MODE=firebase`.
-4. Restart `npm run dev` (or rebuild when serving `dist`).
+Local development defaults to **local demo mode**. Production builds use the existing CCDI Firebase web configuration and store this app's data under a separate `/ccdiQueue/` namespace, leaving the old app's `/queues` and `/currentQueue` paths untouched.
 
-The Firebase adapter reads/writes these Realtime Database paths:
+The Firebase web configuration is public client configuration, not an access-control mechanism. Actual access is controlled by Realtime Database rules. This prototype uses client-side role checks, not Firebase Authentication. Review your existing rules before enabling live mode, and do not make a production database publicly writable to work around permission errors.
+
+For local Firebase testing, copy `.env.example` to `.env.local`, set `VITE_QUEUE_MODE=firebase`, and restart `npm run dev`. Optional `VITE_FIREBASE_*` values can override the existing project configuration.
+
+For Vercel, set the project's **Root Directory** to `ccdi-queue` and deploy the latest `main` commit. Production builds select Firebase via `.env.production`; no Vercel environment variables are needed unless you want to override the Firebase web configuration. Vite embeds client settings at build time.
+
+The Firebase adapter reads and writes only these Realtime Database paths:
 
 | Path | Use |
 | --- | --- |
-| `/queues/{id}` | Existing flat queue record format; transactions operate on `/queues` |
-| `/documentRequests/{id}` | Document requests and status transitions |
+| `/ccdiQueue/queues/{id}` | Queue records; transactions operate on `/ccdiQueue/queues` |
+| `/ccdiQueue/documentRequests/{id}` | Document requests and status transitions |
 | `/.info/connected` | Actual connection state |
 
-Old `/currentQueue` is unused. **Stop all clients running the old code** before a migration; old `set()` writes can conflict with the new transaction workflow. Old document requests existed only in React state, so they cannot be recovered automatically.
+The database rules must permit the intended access under `/ccdiQueue`. This project does not modify Firebase rules. Old `/currentQueue` data is not imported; the legacy app's queue format is incompatible with this app's validated ticket format. Firebase Realtime Database automatically reconnects listeners, and the app clears each listener's error after it receives valid data again.
 
 Database rules must already authorize the relevant reads and writes. This package does **not** deploy rules, open your database, or authenticate a Firebase user. If your database requires Firebase Authentication, this prototype's shared-password login does not satisfy it; the app will show the permission error. Do not fix that by making a real student database public.
 
