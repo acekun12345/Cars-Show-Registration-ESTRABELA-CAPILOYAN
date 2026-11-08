@@ -1,6 +1,8 @@
 import PaymentBadge from './components/PaymentBadge.jsx'
 import KpiCards from './components/KpiCards.jsx'
+import RegistrationTable from './components/RegistrationTable.jsx'
 import StatusBadge from './components/StatusBadge.jsx'
+import { sampleRegistrations } from './api/sample-data.js'
 import { formatCurrency, formatDateTime } from './utils/format.js'
 
 const sampleSummary = {
@@ -25,6 +27,11 @@ function App() {
         <section className="space-y-4">
           <h2 className="text-xl font-semibold">Registration overview</h2>
           <KpiCards summary={sampleSummary} />
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold">Registrations</h2>
+          <RegistrationTable items={sampleRegistrations.slice(0, 10)} />
         </section>
 
         <section className="space-y-4 rounded-lg bg-white p-6 shadow-sm">
