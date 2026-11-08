@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getRegistrations, getSummary } from '../api/sample-data.js'
+import { getRegistrations, getSummary } from '../api/registrationsApi.js'
 import KpiCards from '../components/KpiCards.jsx'
 import Pagination from '../components/Pagination.jsx'
 import RegistrationFilters from '../components/RegistrationFilters.jsx'
@@ -22,11 +22,6 @@ function RegistrationsPage() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [retryCount, setRetryCount] = useState(0)
-  const forceFailure =
-    import.meta.env.DEV &&
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('forceError') === '1'
-
   useEffect(() => {
     let isCurrentRequest = true
 
@@ -35,10 +30,6 @@ function RegistrationsPage() {
       setError('')
 
       try {
-        if (forceFailure) {
-          throw new Error('Temporary error-state test is enabled.')
-        }
-
         const [registrationData, summaryData] = await Promise.all([
           getRegistrations({
             participantName: debouncedParticipantName,
@@ -58,9 +49,13 @@ function RegistrationsPage() {
         setTotalCount(registrationData.totalCount)
         setTotalPages(registrationData.totalPages)
         setSummary(summaryData)
-      } catch {
+      } catch (requestError) {
         if (isCurrentRequest) {
-          setError('Cannot reach the API. Please check your connection and try again.')
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : 'Cannot reach the API. Please check your connection and try again.',
+          )
         }
       } finally {
         if (isCurrentRequest) {
@@ -78,7 +73,6 @@ function RegistrationsPage() {
     debouncedParticipantName,
     filters.type,
     filters.status,
-    forceFailure,
     page,
     pageSize,
     retryCount,
@@ -146,11 +140,6 @@ function RegistrationsPage() {
               role="alert"
             >
               <span className="block font-medium">{error}</span>
-              {forceFailure && (
-                <span className="mt-1 block text-sm">
-                  TEMPORARY ERROR-STATE TEST is enabled with ?forceError=1.
-                </span>
-              )}
               <button
                 className="mt-3 rounded-md bg-red-800 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800/40 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={loading}
