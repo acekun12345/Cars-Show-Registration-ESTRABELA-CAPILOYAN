@@ -9,10 +9,10 @@
    npm install --prefix frontend
    ```
 
-3. Start the Vite development server:
+3. From the repository root, start the Vite development server:
 
    ```sh
-   npm run dev --prefix frontend
+   npm run dev
    ```
 
 4. Open the local URL printed by Vite.
@@ -38,6 +38,6 @@ back to `../api/registrationsApi.js` to use the C# API. Both modules export
 ## Check the frontend
 
 ```sh
-npm run build --prefix frontend
-npm run lint --prefix frontend
+npm run build
+npm run lint
 ```
