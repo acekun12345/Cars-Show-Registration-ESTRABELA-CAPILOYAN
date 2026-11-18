@@ -4,6 +4,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
+using Application.Features.Registrations.GetRegistrationById;
 using Application.Features.Registrations.GetRegistrations;
 using Domain.Common;
 using FluentValidation;
@@ -30,6 +31,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 // Handlers
 builder.Services.AddScoped<ICommandHandler<CreateRegistrationCommand, Result<RegistrationResponse>>, CreateRegistrationHandler>();
 builder.Services.AddScoped<IQueryHandler<GetRegistrationsQuery, Result<PagedResponse<RegistrationResponse>>>, GetRegistrationsHandler>();
+builder.Services.AddScoped<IQueryHandler<GetRegistrationByIdQuery, Result<RegistrationResponse>>, GetRegistrationByIdHandler>();
 
 // JSON: enums as strings
 builder.Services.ConfigureHttpJsonOptions(options =>

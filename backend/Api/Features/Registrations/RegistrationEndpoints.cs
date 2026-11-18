@@ -5,6 +5,7 @@ using Api.Common.Filters;
 using Application.Abstractions.Messaging;
 using Application.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
+using Application.Features.Registrations.GetRegistrationById;
 using Application.Features.Registrations.GetRegistrations;
 using Domain.Common;
 
@@ -40,6 +41,17 @@ public static class RegistrationEndpoints
             .AddEndpointFilter<ValidationFilter<GetRegistrationsQuery>>()
             .Produces<PagedResponse<RegistrationResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapGet("/{id:guid}", async (
+                Guid id,
+                IQueryHandler<GetRegistrationByIdQuery, Result<RegistrationResponse>> handler,
+                CancellationToken ct) =>
+            {
+                var result = await handler.HandleAsync(new GetRegistrationByIdQuery(id), ct);
+                return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<RegistrationResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return app;
     }
