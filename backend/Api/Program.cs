@@ -60,11 +60,12 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Apply migrations at startup
+// Apply migrations and seed at startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+    await RegistrationSeeder.SeedAsync(db);
 }
 
 app.UseCors("react");
