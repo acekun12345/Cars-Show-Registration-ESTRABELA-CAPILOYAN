@@ -35,9 +35,12 @@ builder.Services.AddScoped<IQueryHandler<GetRegistrationsQuery, Result<PagedResp
 builder.Services.AddScoped<IQueryHandler<GetRegistrationByIdQuery, Result<RegistrationResponse>>, GetRegistrationByIdHandler>();
 builder.Services.AddScoped<IQueryHandler<GetRegistrationSummaryQuery, Result<RegistrationSummaryResponse>>, GetRegistrationSummaryHandler>();
 
-// JSON: enums as strings
+// JSON: enums as strings (reject integer enum values)
 builder.Services.ConfigureHttpJsonOptions(options =>
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false)));
+
+// ProblemDetails service
+builder.Services.AddProblemDetails();
 
 // CORS: React dev server
 builder.Services.AddCors(options => options.AddPolicy("react", policy =>
