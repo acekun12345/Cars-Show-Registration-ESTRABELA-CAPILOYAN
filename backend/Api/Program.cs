@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Api.Features.Registrations;
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Application.Features.Registrations;
@@ -27,14 +29,22 @@ builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 // Handlers
 builder.Services.AddScoped<ICommandHandler<CreateRegistrationCommand, Result<RegistrationResponse>>, CreateRegistrationHandler>();
 
+// JSON: enums as strings
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// CORS: React dev server
+builder.Services.AddCors(options => options.AddPolicy("react", policy =>
+    policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
+
 // API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, _, _) =>
     {
-        document.Info.Title = "Vertical Slice API Template by Elvin Manuel R. Luces, MIT";
-        document.Info.Description = "A simple API demonstrating Vertical Slice Architecture";
+        document.Info.Title = "Car Show Registration API";
+        document.Info.Description = "Vertical Slice API for Car Show 2027 registrations";
         return Task.CompletedTask;
     });
 });
@@ -48,6 +58,8 @@ using (var scope = app.Services.CreateScope())
     await db.Database.MigrateAsync();
 }
 
+app.UseCors("react");
+
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
@@ -56,9 +68,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // Root endpoint
-app.MapGet("/", () => "Welcome to the Vertical Slice API! Go to /scalar/v1 for API documentation.");
+app.MapGet("/", () => "Car Show Registration API. Go to /scalar/v1 for API documentation.");
 
 // Map endpoints
-// app.Map{FeatureGroup}Endpoints();
+app.MapRegistrationEndpoints();
 
 app.Run();
