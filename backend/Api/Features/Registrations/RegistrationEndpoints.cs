@@ -5,6 +5,7 @@ using Api.Common.Filters;
 using Application.Abstractions.Messaging;
 using Application.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
+using Application.Features.Registrations.GetRegistrations;
 using Domain.Common;
 
 public static class RegistrationEndpoints
@@ -27,6 +28,18 @@ public static class RegistrationEndpoints
             .Produces<RegistrationResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict);
+
+        group.MapGet("/", async (
+                [AsParameters] GetRegistrationsQuery query,
+                IQueryHandler<GetRegistrationsQuery, Result<PagedResponse<RegistrationResponse>>> handler,
+                CancellationToken ct) =>
+            {
+                var result = await handler.HandleAsync(query, ct);
+                return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .AddEndpointFilter<ValidationFilter<GetRegistrationsQuery>>()
+            .Produces<PagedResponse<RegistrationResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return app;
     }
