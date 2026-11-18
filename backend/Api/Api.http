@@ -258,10 +258,10 @@ GET {{baseUrl}}/api/registrations?type=Competitor&status=Pending&participantName
 ### Case 26 - No matches -> 200 (items [], totalCount 0, totalPages 0)
 GET {{baseUrl}}/api/registrations?participantName=zzzzzz
 
-### Case 27 - Invalid type -> 400 (errors.Type)
+### Case 27 - Invalid type -> 400 (no 500, no crash)
 GET {{baseUrl}}/api/registrations?type=Sponsor
 
-### Case 28 - Invalid status -> 400 (errors.Status)
+### Case 28 - Invalid status -> 400 (no 500, no crash)
 GET {{baseUrl}}/api/registrations?status=Done
 
 ################################################################
