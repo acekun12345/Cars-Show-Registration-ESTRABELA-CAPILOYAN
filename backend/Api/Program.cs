@@ -8,9 +8,13 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Data Source=carshow.db";
+// Database (SQLite file inside the Api folder)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString) || connectionString.Contains("carshow.db"))
+{
+    var dbPath = Path.Combine(builder.Environment.ContentRootPath, "carshow.db");
+    connectionString = $"Data Source={dbPath}";
+}
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
@@ -36,14 +40,11 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Seed data
+// Apply migrations at startup
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    // dbContext.<Entities>.AddRange(...);
-
-    dbContext.SaveChanges();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline
