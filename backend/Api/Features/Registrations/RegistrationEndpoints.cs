@@ -7,6 +7,7 @@ using Application.Features.Registrations;
 using Application.Features.Registrations.CreateRegistration;
 using Application.Features.Registrations.GetRegistrationById;
 using Application.Features.Registrations.GetRegistrations;
+using Application.Features.Registrations.GetRegistrationSummary;
 using Domain.Common;
 
 public static class RegistrationEndpoints
@@ -41,6 +42,15 @@ public static class RegistrationEndpoints
             .AddEndpointFilter<ValidationFilter<GetRegistrationsQuery>>()
             .Produces<PagedResponse<RegistrationResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapGet("/summary", async (
+                IQueryHandler<GetRegistrationSummaryQuery, Result<RegistrationSummaryResponse>> handler,
+                CancellationToken ct) =>
+            {
+                var result = await handler.HandleAsync(new GetRegistrationSummaryQuery(), ct);
+                return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+            })
+            .Produces<RegistrationSummaryResponse>();
 
         group.MapGet("/{id:guid}", async (
                 Guid id,
