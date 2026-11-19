@@ -1,1 +1,26 @@
-frontend/
+frontend/# Build results and package caches
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+dist/
+node_modules/
+
+# IDE and tooling
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+# Database files
+*.db
+*.db-shm
+*.db-wal
+# OS metadata
+.DS_Store
+Thumbs.db
+# Local reference copy
+backend-dup/
+backend-dup

@@ -1,22 +1,38 @@
-# Car Show Registration
+# Car Show Registration System
 
-Car Show Registration System: a C# backend API and a React dashboard for event staff.
+A web-based system for managing car show registrations: a C# backend API and a React dashboard for event staff.
 
-## Repository layout
+## Team Members
+
+| MEMBER | ROLE |
+| --- | --- |
+| ALBERT CAPILOYAN | Backend Developer |
+| ESTRABELA ACE | Frontend Developer |
+
+## Repository Layout
 
 - `backend/` – C# API (Backend Developer)
 - `frontend/` – React + Vite dashboard (Frontend Developer)
 - `docs/screenshots/` – project screenshots
+- `README.md` – team, roles, how to run both apps
 
-## Running the frontend
+## How to Run
 
-    cd frontend
-    npm install
-    npm run dev
+### Backend
 
-## Team roles
+```bash
+cd backend
+dotnet run --project Api
+```
 
-| Member | Role |
-|---|---|
-| ALBERT CAPILOYAN | Backend Developer |
-| ESTRABELA ACE | Frontend Developer |
+API: http://localhost:5205 · Scalar: http://localhost:5205/scalar/v1
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Dashboard: http://localhost:5173
