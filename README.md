@@ -6,7 +6,7 @@ A web-based system for managing car show registrations: a C# backend API and a R
 
 | MEMBER | ROLE |
 | --- | --- |
-| ALBERT CAPILOYAN | Backend Developer |
+|  DAN ALBERT CAPILOYAN | Backend Developer |
 | ESTRABELA ACE | Frontend Developer |
 
 ## Repository Layout
