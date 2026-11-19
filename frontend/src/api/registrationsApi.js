@@ -1,9 +1,8 @@
 function getApiBaseUrl() {
-  const baseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
-
-  if (!baseUrl) {
-    throw new Error('VITE_API_BASE_URL is not configured.')
-  }
+  const baseUrl =
+    import.meta.env.VITE_API_BASE_URL !== undefined
+      ? import.meta.env.VITE_API_BASE_URL.trim()
+      : 'http://localhost:5205'
 
   return baseUrl.replace(/\/+$/, '')
 }

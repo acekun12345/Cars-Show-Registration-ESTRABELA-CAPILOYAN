@@ -44,7 +44,13 @@ builder.Services.AddProblemDetails();
 
 // CORS: React dev server
 builder.Services.AddCors(options => options.AddPolicy("react", policy =>
-    policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
+    policy.WithOrigins(
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174")
+    .AllowAnyHeader()
+    .AllowAnyMethod()));
 
 // API
 builder.Services.AddEndpointsApiExplorer();

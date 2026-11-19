@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { ApiError, createRegistration } from '../api/registrationsApi.js'
 
 const fields = [
-  { name: 'participantName', label: 'Participant name', type: 'text' },
-  { name: 'contactNumber', label: 'Contact number', type: 'tel' },
-  { name: 'email', label: 'Email', type: 'email' },
-  { name: 'address', label: 'Address', type: 'text' },
-  { name: 'carMakeModel', label: 'Car make and model', type: 'text' },
-  { name: 'plateNumber', label: 'Plate number', type: 'text' },
+  { name: 'participantName', label: 'Participant name', type: 'text', placeholder: 'e.g. Juan Dela Cruz' },
+  { name: 'contactNumber', label: 'Contact number', type: 'tel', placeholder: '09XXXXXXXXX' },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'e.g. juan@example.com' },
+  { name: 'address', label: 'Address', type: 'text', placeholder: 'e.g. 123 Rizal St., Naga City' },
+  { name: 'carMakeModel', label: 'Car make and model', type: 'text', placeholder: 'e.g. Toyota Supra MK4' },
+  { name: 'plateNumber', label: 'Plate number', type: 'text', placeholder: 'e.g. ABC 1234' },
+  { name: 'amountPaid', label: 'Amount paid (optional, ₱)', type: 'number', min: '0', step: 'any', placeholder: '0.00' },
 ]
 
 const fieldAliases = {
@@ -17,6 +18,7 @@ const fieldAliases = {
   address: ['address'],
   carMakeModel: ['carmakemodel'],
   plateNumber: ['platenumber'],
+  amountPaid: ['amountpaid'],
   registrationType: ['registrationtype'],
 }
 
@@ -27,6 +29,7 @@ const initialForm = {
   address: '',
   carMakeModel: '',
   plateNumber: '',
+  amountPaid: '',
   registrationType: 'Exhibitor',
 }
 
@@ -69,7 +72,11 @@ function NewRegistrationForm({ onCancel, onCreated }) {
     setFieldErrors({})
 
     try {
-      await createRegistration(form)
+      const payload = {
+        ...form,
+        amountPaid: form.amountPaid === '' ? 0 : Number(form.amountPaid),
+      }
+      await createRegistration(payload)
       onCreated()
     } catch (requestError) {
       if (requestError instanceof ApiError) {
@@ -149,7 +156,7 @@ function NewRegistrationForm({ onCancel, onCreated }) {
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {fields.map(({ name, label, type }) => {
+          {fields.map(({ name, label, type, placeholder, min, step }) => {
             const messages = getErrorsForField(name)
             const errorId = `${name}-error`
 
@@ -171,9 +178,12 @@ function NewRegistrationForm({ onCancel, onCreated }) {
                       : 'border-slate-300 focus-visible:border-blue-600 focus-visible:ring-blue-600/20'
                   }`}
                   id={`new-${name}`}
+                  min={min}
                   name={name}
                   onChange={handleChange}
-                  required
+                  placeholder={placeholder}
+                  required={name !== 'amountPaid'}
+                  step={step}
                   type={type}
                   value={form[name]}
                 />
